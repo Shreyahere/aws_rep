@@ -1,24 +1,30 @@
-/* var http = require('http');
-
-http.createServer(function(req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end('Hello World!');
-}).listen(3000); */
+const bodyParser = require('body-parser');
 var mysql = require('mysql');
 
-var con = mysql.createConnection({
-    host: "database.cibnkadocg8q.us-east-2.rds.amazonaws.com",
-    user: "aws_db",
-    password: "KuchBhi-123",
-    database: 'testnode'
+var express = require('express');
+const app = express();
+
+var con = require('./dbconnection');
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.get('/my_customers', (req, res) => {
+    con.query("SELECT * FROM `customers`", function(err, result, fields) {
+        if (err) throw err;
+        res.send(JSON.stringify({ "status": 200, "error": null, "response": result }));
+    })
 });
 
-con.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected!");
-    var sql = "CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))";
-    con.query(sql, function(err, result) {
+app.get('/', (req, res) => {
+    con.query("SELECT * FROM `customers`", function(err, result, fields) {
         if (err) throw err;
-        console.log("Table created");
-    });
+        res.send('Blank get request');
+    })
 });
+
+app.get('^/users/:userId([0-9]{6})', function(req, res) {
+    res.send('Route match for User ID: ' + req.params.userId);
+});
+
+app.listen(3000, () => console.log("Server up"));
