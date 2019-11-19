@@ -4,7 +4,7 @@ var mysql = require('mysql');
 var express = require('express');
 const app = express();
 
-var con = require('./dbconnection');
+var con = require('dbconnection');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
